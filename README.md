@@ -1,0 +1,2 @@
+# MyBriefcase
+Project created for autonomous purposes, with the purpose of practicing my knowledge. Project created with Laravel 8 (Backend) and Vue.js (Frontend) where you will be able to create your user and upload your own projects by attaching images, apart from that you can delete them, update them In addition, you can also search for projects by their names and you will also be able to see a project in more depth, and be able to give your opinion by putting comments.
