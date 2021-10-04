@@ -5,7 +5,7 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <a :href="project.link" class="text-dark">
+                                <a v-show="!project.editing" :href="project.link" class="text-dark">
                                     <h5 class="mb-1" href="" v-text="project.name"></h5>
                                 </a>
                                 <!-- <h5 class="mt-2" v-text="project.name" v-show="!project.editing"></h5> -->
@@ -33,6 +33,10 @@
                             <input class="form-control mb-2" v-model="project.name">
                             <label>Descripcion</label>
                             <input class="form-control mb-2" v-model="project.description">
+                            <label>Repositorio</label>
+                            <input class="form-control mb-2" v-model="project.repository">
+                            <label>Live action link</label>
+                            <input class="form-control mb-2" v-model="project.live_action">
                             <div>
                                 <button class="btn btn-success btn-sm">Guardar</button>
                                 <button v-show="project.editing" class="btn btn-secondary btn-sm" @click="updateDowm(project)">Cancelar</button>
@@ -54,7 +58,7 @@ export default {
     },
     methods:{
             deleteProject(project){
-                axios.delete(`projects/${project.id}`)
+                axios.delete(`projects/${project.slug}`)
                     .then(res => {
                         this.myProjects.splice(this.myProjects.indexOf(project), 1)
                     })
@@ -66,9 +70,16 @@ export default {
                 this.myProjects[this.myProjects.indexOf(project)].editing = false
             },
             update(project){
-                axios.put(`projects/${project.id}`,{
+                axios.put(`projects/${project.slug}`,{
                     name: project.name,
-                    description: project.description
+                    description: project.description,
+                    slug: project.slug,
+                    repository: project.repository,
+                    link: project.live_action
+                }).then(res => {
+                    console.log('actualizado')
+                }).catch(err => {
+                    console.log(err.response.data)
                 })
                 this.myProjects[this.myProjects.indexOf(project)].editing = false
             }

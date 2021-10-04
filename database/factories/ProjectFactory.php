@@ -25,6 +25,9 @@ class ProjectFactory extends Factory
         return [
             'name' => $this->faker->sentence(4),
             'description' => $this->faker->paragraphs(1, true),
+            'slug' => $this->faker->slug,
+            'repository' => 'https://github.com/JonathanPeraza123/MyBriefcase',
+            'link' => 'https://github.com/JonathanPeraza123/MyBriefcase',
             'user_id' => User::factory()->create()
         ];
     }

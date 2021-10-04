@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Rules\Slug;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,6 +14,11 @@ class Project extends Model
 
     protected $guarded = [];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -21,6 +27,11 @@ class Project extends Model
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(Images::class);
     }
 
     public function scopeSearch(Builder $Query, $values)

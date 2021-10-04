@@ -1991,6 +1991,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
@@ -2001,7 +2005,7 @@ __webpack_require__.r(__webpack_exports__);
     deleteProject: function deleteProject(project) {
       var _this = this;
 
-      axios["delete"]("projects/".concat(project.id)).then(function (res) {
+      axios["delete"]("projects/".concat(project.slug)).then(function (res) {
         _this.myProjects.splice(_this.myProjects.indexOf(project), 1);
       });
     },
@@ -2012,9 +2016,16 @@ __webpack_require__.r(__webpack_exports__);
       this.myProjects[this.myProjects.indexOf(project)].editing = false;
     },
     update: function update(project) {
-      axios.put("projects/".concat(project.id), {
+      axios.put("projects/".concat(project.slug), {
         name: project.name,
-        description: project.description
+        description: project.description,
+        slug: project.slug,
+        repository: project.repository,
+        link: project.live_action
+      }).then(function (res) {
+        console.log('actualizado');
+      })["catch"](function (err) {
+        console.log(err.response.data);
       });
       this.myProjects[this.myProjects.indexOf(project)].editing = false;
     }
@@ -2073,32 +2084,63 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   data: function data() {
     return {
       // error: false,
       name: '',
-      description: '' // errors: []
-
+      description: '',
+      slug: '',
+      repository: '',
+      link: '',
+      images: [],
+      erres: []
     };
   },
   methods: {
     submit: function submit() {
       var _this = this;
 
-      axios.post('/projects', {
-        name: this.name,
-        description: this.description
-      }).then(function (res) {
+      this.erres = [];
+      var formData = new FormData();
+      formData.append('name', this.name);
+      formData.append('description', this.description);
+      formData.append('slug', this.slug);
+      formData.append('repository', this.repository);
+      formData.append('link', this.link);
+
+      for (var i = 0; i < this.images.length; i++) {
+        console.log(this.images[i]);
+        var file = this.images[i];
+        formData.append('files[' + i + ']', file);
+      }
+
+      var config = {
+        headers: {
+          "content-type": "multipart/form-data"
+        }
+      };
+      axios.post('/projects', formData, config).then(function (res) {
         EventBus.$emit('project-created', res.data.data);
         _this.name = '';
         _this.description = '';
-        _this.error = false;
+        _this.slug = '';
+        _this.repository = '';
+        _this.link = '';
+        _this.$refs.files.value = '';
+        _this.images = [];
       })["catch"](function (err) {
-        console.log(err.response.data); // this.errors = err.response.data;
-        // if()
-        // this.error = true;
+        _this.erres.push(err.response.data);
       });
+    },
+    imageChange: function imageChange() {
+      // console.log(this.$refs.files.files)
+      for (var i = 0; i < this.$refs.files.files.length; i++) {
+        this.images.push(this.$refs.files.files[i]); // console.log(this.images);
+      }
     }
   }
 });
@@ -2407,11 +2449,70 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['project', 'user', 'profile'],
+  props: ['project', 'user', 'profile', 'images'],
   data: function data() {
     return {
       proyecto: [],
+      imagenes: [],
       usuario: [],
       perfil: [],
       user_show: "",
@@ -2425,6 +2526,7 @@ __webpack_require__.r(__webpack_exports__);
     this.proyecto = JSON.parse(this.project);
     this.usuario = JSON.parse(this.user);
     this.perfil = JSON.parse(this.profile);
+    this.imagenes = JSON.parse(this.images);
     this.user_show = "/@".concat(this.usuario.username);
     axios.get("/projects/".concat(this.proyecto.id, "/comments")).then(function (res) {
       _this.comments = res.data.data;
@@ -2434,7 +2536,7 @@ __webpack_require__.r(__webpack_exports__);
     addComment: function addComment() {
       var _this2 = this;
 
-      axios.post("/projects/".concat(this.proyecto.id, "/comments"), {
+      axios.post("/projects/".concat(this.proyecto.slug, "/comments"), {
         body: this.newComment
       }).then(function (res) {
         _this2.comments.push(res.data.data);
@@ -39389,14 +39491,14 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mb-2" }, [
+    return _c("div", { staticClass: "mb-2 mx-auto d-block" }, [
       _c("img", {
         staticClass:
           "rounded-circle float-left mr-3 mb-3 border border-dark img-fluid",
+        staticStyle: { width: "340px", height: "340px" },
         attrs: {
-          width: "300px",
           src:
-            "https://img.freepik.com/vector-gratis/ilustracion-vector-dibujos-animados-lindo-corgi-beber-leche-te-boba-bebida-animal-concepto-aislado-vector-estilo-dibujos-animados-plana_138676-1943.jpg?size=338&ext=jpg",
+            "https://st.depositphotos.com/1020341/4233/i/600/depositphotos_42333899-stock-photo-portrait-of-huge-beautiful-male.jpg",
           alt: ""
         }
       })
@@ -39440,7 +39542,18 @@ var render = function() {
                 _c("div", [
                   _c(
                     "a",
-                    { staticClass: "text-dark", attrs: { href: project.link } },
+                    {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: !project.editing,
+                          expression: "!project.editing"
+                        }
+                      ],
+                      staticClass: "text-dark",
+                      attrs: { href: project.link }
+                    },
                     [
                       _c("h5", {
                         staticClass: "mb-1",
@@ -39620,6 +39733,52 @@ var render = function() {
                   }
                 }),
                 _vm._v(" "),
+                _c("label", [_vm._v("Repositorio")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: project.repository,
+                      expression: "project.repository"
+                    }
+                  ],
+                  staticClass: "form-control mb-2",
+                  domProps: { value: project.repository },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(project, "repository", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
+                _c("label", [_vm._v("Live action link")]),
+                _vm._v(" "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: project.live_action,
+                      expression: "project.live_action"
+                    }
+                  ],
+                  staticClass: "form-control mb-2",
+                  domProps: { value: project.live_action },
+                  on: {
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.$set(project, "live_action", $event.target.value)
+                    }
+                  }
+                }),
+                _vm._v(" "),
                 _c("div", [
                   _c("button", { staticClass: "btn btn-success btn-sm" }, [
                     _vm._v("Guardar")
@@ -39765,12 +39924,105 @@ var render = function() {
             }
           }),
           _vm._v(" "),
-          _c("label", [_vm._v("Link")]),
+          _c("span"),
+          _vm._v(" "),
+          _c("label", [_vm._v("Slug")]),
           _vm._v(" "),
           _c("input", {
-            staticClass: "form-control me-2",
-            attrs: { type: "text" }
-          })
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.slug,
+                expression: "slug"
+              }
+            ],
+            staticClass: "form-control mb-2",
+            attrs: { type: "text", name: "slug", required: "" },
+            domProps: { value: _vm.slug },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.slug = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("label", [_vm._v("Repositorio")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.repository,
+                expression: "repository"
+              }
+            ],
+            staticClass: "form-control mb-2",
+            attrs: { type: "text", name: "repository", required: "" },
+            domProps: { value: _vm.repository },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.repository = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("label", [_vm._v("Live action link")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.link,
+                expression: "link"
+              }
+            ],
+            staticClass: "form-control me-2 mb-2",
+            attrs: { type: "text", name: "link", required: "" },
+            domProps: { value: _vm.link },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.link = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("label", { staticClass: "form-label" }, [
+            _vm._v("Subir imagenes")
+          ]),
+          _vm._v(" "),
+          _c("br"),
+          _vm._v(" "),
+          _c("input", {
+            ref: "files",
+            attrs: {
+              type: "file",
+              accept: "image/*",
+              multiple: "",
+              name: "image"
+            },
+            on: { change: _vm.imageChange }
+          }),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "mt-2" },
+            _vm._l(_vm.images, function(image, index) {
+              return _c("p", { key: index }, [_vm._v(_vm._s(image.name))])
+            }),
+            0
+          )
         ]),
         _vm._v(" "),
         _vm._m(0)
@@ -40146,12 +40398,12 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "mb-2" }, [
+    return _c("div", { staticClass: "mb-2 mx-auto d-block" }, [
       _c("img", {
         staticClass:
           "rounded-circle float-left mr-3 mb-3 border border-dark img-fluid",
+        staticStyle: { width: "340px", height: "340px" },
         attrs: {
-          width: "300px",
           src:
             "https://img.freepik.com/vector-gratis/ilustracion-vector-dibujos-animados-lindo-corgi-beber-leche-te-boba-bebida-animal-concepto-aislado-vector-estilo-dibujos-animados-plana_138676-1943.jpg?size=338&ext=jpg",
           alt: ""
@@ -40184,25 +40436,172 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "card shadow-sm" }, [
     _c("div", { staticClass: "card-body" }, [
-      _c("div", { staticClass: "Container d-flex mb-4" }, [
+      _c("div", { staticClass: "d-flex mb-4" }, [
         _vm._m(0),
         _vm._v(" "),
-        _c("div", { staticClass: "container d-flex flex-column" }, [
-          _c("h2", { domProps: { textContent: _vm._s(_vm.proyecto.name) } }),
-          _vm._v(" "),
-          _c("a", { attrs: { href: _vm.user_show } }, [
-            _vm._v("Proyecto publicado por "),
-            _c("strong", [_vm._v(_vm._s(_vm.perfil.name))])
+        _c("div", { staticClass: "container " }, [
+          _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col-9 col-md-10" }, [
+              _c("div", { staticClass: "container" }, [
+                _c("h5", {
+                  staticClass: "f",
+                  domProps: { textContent: _vm._s(_vm.proyecto.name) }
+                }),
+                _vm._v(" "),
+                _c("a", { attrs: { href: _vm.user_show } }, [
+                  _vm._v("Proyecto publicado por "),
+                  _c("strong", [_vm._v(_vm._s(_vm.perfil.name))])
+                ])
+              ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-1 col-md-2" }, [
+              _c("div", { staticClass: "container" }, [
+                _c("div", { staticClass: "row" }, [
+                  _c("div", { staticClass: "col-12 col-lg-6 mb-1" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-outline-success",
+                        attrs: {
+                          href: _vm.proyecto.repository,
+                          target: "_blank"
+                        }
+                      },
+                      [
+                        _c(
+                          "svg",
+                          {
+                            staticClass: "bi bi-github",
+                            attrs: {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16"
+                            }
+                          },
+                          [
+                            _c("path", {
+                              attrs: {
+                                d:
+                                  "M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
+                              }
+                            })
+                          ]
+                        )
+                      ]
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-12 col-lg-6" }, [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "mr-2 btn btn-outline-success",
+                        attrs: { href: _vm.proyecto.link, target: "_blank" }
+                      },
+                      [
+                        _c(
+                          "svg",
+                          {
+                            staticClass: "bi bi-link-45deg",
+                            attrs: {
+                              xmlns: "http://www.w3.org/2000/svg",
+                              width: "16",
+                              height: "16",
+                              fill: "currentColor",
+                              viewBox: "0 0 16 16"
+                            }
+                          },
+                          [
+                            _c("path", {
+                              attrs: {
+                                d:
+                                  "M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"
+                              }
+                            }),
+                            _vm._v(" "),
+                            _c("path", {
+                              attrs: {
+                                d:
+                                  "M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.372-1.372a3 3 0 1 0-4.243-4.243L6.586 4.672z"
+                              }
+                            })
+                          ]
+                        )
+                      ]
+                    )
+                  ])
+                ])
+              ])
+            ])
           ])
         ])
       ]),
       _vm._v(" "),
       _c("p", {
-        staticClass: "text-secondary",
+        staticClass: "text-secondary mb-2",
         domProps: { textContent: _vm._s(_vm.proyecto.description) }
       }),
       _vm._v(" "),
-      _vm._m(1)
+      _c("div", { staticClass: "container" }, [
+        _c(
+          "div",
+          {
+            staticClass: "carousel slide",
+            attrs: { id: "carouselExampleIndicators", "data-ride": "carousel" }
+          },
+          [
+            _c(
+              "ol",
+              { staticClass: "carousel-indicators" },
+              [
+                _c("li", {
+                  staticClass: "active bg-primary",
+                  attrs: {
+                    "data-target": "#carouselExampleIndicators",
+                    "data-slide-to": "0"
+                  }
+                }),
+                _vm._v(" "),
+                _vm._l(_vm.imagenes, function(imagen) {
+                  return _c("li", {
+                    staticClass: "bg-primary",
+                    attrs: {
+                      "data-target": "#carouselExampleIndicators",
+                      "data-slide-to": _vm.imgen - 1
+                    }
+                  })
+                })
+              ],
+              2
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "carousel-inner" },
+              [
+                _vm._m(1),
+                _vm._v(" "),
+                _vm._l(_vm.imagenes, function(imagen) {
+                  return _c("div", { staticClass: "carousel-item" }, [
+                    _c("img", {
+                      staticClass: "d-block w-100",
+                      attrs: { src: imagen.images, alt: "" }
+                    })
+                  ])
+                })
+              ],
+              2
+            ),
+            _vm._v(" "),
+            _vm._m(2),
+            _vm._v(" "),
+            _vm._m(3)
+          ]
+        )
+      ])
     ]),
     _vm._v(" "),
     _c(
@@ -40211,7 +40610,7 @@ var render = function() {
       [
         _vm._l(_vm.comments, function(comment) {
           return _c("div", { staticClass: "mb-3" }, [
-            _vm._m(2, true),
+            _vm._m(4, true),
             _vm._v(" "),
             _c("div", { staticClass: "card border-0 shadow-sm" }, [
               _c("div", { staticClass: "card-body p-2 text-secondary" }, [
@@ -40284,7 +40683,7 @@ var render = function() {
                       }
                     }),
                     _vm._v(" "),
-                    _vm._m(3)
+                    _vm._m(5)
                   ])
                 ])
               ]
@@ -40304,7 +40703,7 @@ var staticRenderFns = [
       _c("img", {
         staticClass: "rounded shadow-sm",
         attrs: {
-          width: "60px",
+          width: "40",
           src:
             "https://img.freepik.com/vector-gratis/ilustracion-vector-dibujos-animados-lindo-corgi-beber-leche-te-boba-bebida-animal-concepto-aislado-vector-estilo-dibujos-animados-plana_138676-1943.jpg?size=338&ext=jpg",
           alt: ""
@@ -40316,48 +40715,64 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c(
-        "div",
-        {
-          staticClass: "carousel slide mx-auto col-md-10",
-          attrs: { id: "carouselExampleSlidesOnly", "data-ride": "carousel" }
-        },
-        [
-          _c("div", { staticClass: "carousel-inner" }, [
-            _c("div", { staticClass: "carousel-item active" }, [
-              _c("img", {
-                staticClass: "d-block w-100",
-                attrs: {
-                  src: "http://vanimg.s3.amazonaws.com/darksh-5.jpg",
-                  alt: "..."
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "carousel-item" }, [
-              _c("img", {
-                staticClass: "d-block w-100",
-                attrs: {
-                  src: "http://vanimg.s3.amazonaws.com/darksh-5.jpg",
-                  alt: "..."
-                }
-              })
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "carousel-item" }, [
-              _c("img", {
-                staticClass: "d-block w-100",
-                attrs: {
-                  src: "http://vanimg.s3.amazonaws.com/darksh-5.jpg",
-                  alt: "..."
-                }
-              })
-            ])
-          ])
-        ]
-      )
+    return _c("div", { staticClass: "carousel-item active" }, [
+      _c("img", {
+        staticClass: "d-block w-100",
+        attrs: {
+          src:
+            "https://blogs.iadb.org/conocimiento-abierto/wp-content/uploads/sites/10/2019/12/banner-lecciones-aprendidas-proyectos-desarrollo-2019.jpg",
+          alt: ""
+        }
+      })
     ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "carousel-control-prev",
+        attrs: {
+          href: "#carouselExampleIndicators",
+          role: "button",
+          "data-slide": "prev"
+        }
+      },
+      [
+        _c("span", {
+          staticClass: "carousel-control-prev-icon",
+          attrs: { "aria-hidden": "true" }
+        }),
+        _vm._v(" "),
+        _c("span", { staticClass: "sr-only " }, [_vm._v("Previous")])
+      ]
+    )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "a",
+      {
+        staticClass: "carousel-control-next",
+        attrs: {
+          href: "#carouselExampleIndicators",
+          role: "button",
+          "data-slide": "next"
+        }
+      },
+      [
+        _c("span", {
+          staticClass: "carousel-control-next-icon",
+          attrs: { "aria-hidden": "true" }
+        }),
+        _vm._v(" "),
+        _c("span", { staticClass: "sr-only" }, [_vm._v("Next")])
+      ]
+    )
   },
   function() {
     var _vm = this

@@ -1,7 +1,7 @@
 <template>
     <div>
-        <div class="mb-2">
-            <img class="rounded-circle float-left mr-3 mb-3 border border-dark img-fluid" width="300px" src="https://img.freepik.com/vector-gratis/ilustracion-vector-dibujos-animados-lindo-corgi-beber-leche-te-boba-bebida-animal-concepto-aislado-vector-estilo-dibujos-animados-plana_138676-1943.jpg?size=338&ext=jpg" alt="">
+        <div class="mb-2 mx-auto d-block">
+            <img class="rounded-circle float-left mr-3 mb-3 border border-dark img-fluid" style="width:340px; height: 340px" src="https://st.depositphotos.com/1020341/4233/i/600/depositphotos_42333899-stock-photo-portrait-of-huge-beautiful-male.jpg" alt="">
         </div>
         <div class="container">
             <h4 class="text-wrap mb-0" v-text="profile.name" v-show="!editing"></h4>
