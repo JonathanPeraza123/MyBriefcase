@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateProject;
 use App\Rules\Slug;
 use App\Models\Images;
 use App\Models\Project;
@@ -46,16 +47,16 @@ class ProjectController extends Controller
         return ProjectResource::collection($projects);
     }
 
-    public function store(Request $request)
+    public function store(CreateProject $request)
     {
-        $request->validate([
-            'name' => ['required', 'min:5'],
-            'description' => ['required', 'min:10'],
-            'slug' => ['required', new Slug, 'alpha_dash', 'unique:projects'],
-            'repository' => ['required'],
-            'link' => ['required'],
-            'files' => ['required']
-        ]);
+        // $request->validate([
+        //     'name' => ['required', 'min:5'],
+        //     'description' => ['required', 'min:10'],
+        //     'slug' => ['required', new Slug, 'alpha_dash', 'unique:projects'],
+        //     'repository' => ['required'],
+        //     'link' => ['required'],
+        //     'files' => ['required']
+        // ]);
         $project = Project::create([
             'user_id' => auth()->id(),
             'name' => $request->name,

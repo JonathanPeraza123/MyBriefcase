@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use Illuminate\Support\Facades\Auth;
@@ -63,6 +64,21 @@ Route::post('projects/{project}/comments', [CommentController::class, 'store'])
     ->middleware('auth')->name('projects.comments.store');
 
 Route::get('projects/{project}/comments', [CommentController::class, 'index'])->name('projects.comments.index');
+
+
+
+//EMAILS
+
+
+// Route::get('contacts/emails', [ContactController::class, 'index']);
+
+
+Route::post('contacts/emails', [ContactController::class, 'store']);
+
+Route::get('disenoContact', function () {
+    return view('emails.contact');
+});
+
 
 
 //AUTH

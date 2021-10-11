@@ -44,6 +44,10 @@ Vue.component('search-component', require('./components/Search.vue').default);
 
 import auth from './mixins/auth';
 
+import VueHasErrorLaravel from 'vue-has-error-laravel';
+Vue.use(VueHasErrorLaravel);
+
+
 
 Vue.mixin(auth);
 

@@ -4,9 +4,9 @@
             <div class="card-body d-flex flex-column">
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mt-2" v-text="project.name"></h5>
-                            </div>
+                            <a :href="`projects/`+ project.slug" class="text-dark">
+                                    <h5 class="mb-1" href="" v-text="project.name"></h5>
+                            </a>
                     </div>
                 </div>
                 <div>

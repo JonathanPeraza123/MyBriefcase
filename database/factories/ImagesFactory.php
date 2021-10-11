@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Images;
+use App\Models\Project;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ImagesFactory extends Factory
@@ -22,7 +23,8 @@ class ImagesFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'images' => 'https://cdn.pixabay.com/photo/2015/04/23/22/00/tree-736885__480.jpg',
+            'project_id' => Project::factory()->create()
         ];
     }
 }

@@ -44,6 +44,6 @@ class Slug implements Rule
      */
     public function message()
     {
-        return 'The slug misspelled.';
+        return 'El slug no puede conterner guiones bajos. Tampoco puede contener guiones al principio o al final.';
     }
 }
